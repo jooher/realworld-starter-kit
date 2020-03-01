@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+
+<div class="banner">
+	<div class="container">
+		<h1 class="logo-font">conduit</h1>
+		<p>A place to share your knowledge.</p>
+	</div>
+</div>
+
+<footer>
+	<div class="container">
+		<a href="/" class="logo-font">conduit</a>
+		<span class="attribution">
+			An interactive learning project from <a href="https://thinkster.io">Thinkster</a>. Code &amp; design licensed under MIT.
+		</span>
+	</div>
+</footer>
+
+
+<body>
+
+<nav>
+		<a href="index.html">conduit</a>
+		<a href="">Home, New Post, Settings, Sign up</a>
+</nav>
+
+
+<div class="home-page" contenteditable>
+
+	<div class="feed-toggle">
+		<a class="nav-link disabled active" href="">Your Feed, Global Feed</a>
+	</div>
+
+	<div class="articles">
+
+		<div class="article-preview">
+
+			<div class="article-meta">
+				<a href="profile"><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
+				<div class="info">
+					<a href="" class="author">Eric Simons</a>
+					<div class="date">January 20th</div>
+				</div>
+				<button class="ion-heart">
+					29
+				</button>
+			</div>
+
+			<a class="preview-link">
+				<h1>How to build webapps that scale</h1>
+				<p>This is the description for the post.</p>
+				<span>Read more...</span>
+			</a>
+
+		</div>
+
+	</div>
+
+	<div class="tags">
+		<a>programming</a>
+	</div>
+
+</div>
+
+<div class="auth-page">
+
+	<h1>Sign up</h1>
+	<a href="">Have an account?</a>
+
+	<ul class="error-messages*">
+		<li></li>
+	</ul>
+
+	<form>
+		<input type="text" placeholder="Your Name"/>
+		<input type="text" placeholder="Email">
+		<input type="password" placeholder="Password">
+		<button class="signup">Sign up</button>
+	</form>
+
+</div>
+
+<div class="profile-page">
+
+  <div class="user-info">
+		<img class="user-img"/>
+		<h4>Eric Simons</h4>
+		<p>
+			Cofounder @GoThinkster, lived in Aol's HQ for a few months, kinda looks like Peeta from the Hunger Games
+		</p>
+		<button class="follow">Follow Eric Simons</button>
+  </div>
+
+	<div class="articles-toggle">
+		<a class="nav-link active" href="">My Articles</a>
+		<a class="nav-link" href="">Favorited Articles</a>
+	</div>
+
+	<div class="articles*">
+		<div class="article-preview">
+	</div>
+
+</div>
+
+<div class="settings-page">
+	<h1>Your Settings</h1>
+	<form>
+		<input type="text" placeholder="URL of profile picture">
+		<input type="text" placeholder="Your Name">
+		<textarea rows="8" placeholder="Short bio about you"></textarea>
+		<input type="text" placeholder="Email">
+		<input type="password" placeholder="Password">
+		<button>Update Settings</button>
+	</form>
+</div>
+
+<div class="editor-page">
+	<form>
+		<input type="text" placeholder="Article Title">
+		<input type="text" placeholder="What's this article about?">
+		<textarea rows="8" placeholder="Write your article (in markdown)"></textarea>
+		<input type="text" class="form-control" placeholder="Enter tags">
+		<div class="tag-list"></div>
+		<button>Publish Article</button>
+	</form>
+</div>
+
+<div class="article-page">
+
+		<h1>How to build webapps that scale</h1>
+
+		<div class="Article-meta">
+			<a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
+			<div class="info"></div>
+			<button class="ion-plus-round">Follow Eric Simons <span class="counter">(10)</span></button>
+			<button class="ion-heart favorite-post">Favorite Post <span class="counter">(29)</span></button>
+		</div>
+
+		<article/>
+
+    <hr />
+
+		<div class="Article-meta"></div>
+
+		<form class="card comment-form">
+			<textarea placeholder="Write a comment..." rows="3"></textarea>
+			<img src="http://i.imgur.com/Qr71crq.jpg" class="comment-author-img" />
+			<button>Post Comment</button>
+		</form>
+
+		<div class="cards*">
+
+        <article>
+          <div class="card-block">
+            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+          </div>
+          <footer>
+            <a class="comment-author Author"></a>
+            <div class="date-posted">Dec 29th</span>
+          </footer>
+        <article>
+
+		</div>
+
+  </div>
+
+</div>
+
+</body>
+
+<script>
+const
+
+	$ = indent => el=> {
+
+		if(el.nodeType==3){
+			const txt=el.nodeValue.trim();
+			return txt ? indent+',"'+txt+'"' : '';
+		}
+
+		const
+			
+			sig = // сигнатура элемента включает его тег, CSS-классы и id в компактной форме,
+				([el.tagName].concat([...el.classList]).join('.')+(el.id?"#"+el.id:''))
+				.replace(/^DIV\.?/,"") // (если тег DIV, то его можно не указывать)
+
+				+ (el.attributes.length ? [...el.attributes]// и остальные атрибуты, если есть, в полной форме
+					.filter(a=>a.name!="class"&&a.name!="id") // (кроме class и id, которые уже указаны)
+					.map(a=>' '+a.name+(a.value ? '="'+a.value+'"':'')) // name[="value"]
+					.join("")
+					: ''
+				),
+			
+			d = el.childNodes.length ? [...el.childNodes] // дочерние элементы перечисляются в d-правиле
+				.map($(indent+'	'))
+				.join("")+indent : '' ;
+
+		return  indent + ",'"+ sig +"'" +'.d(""' + d + ")"; //
+	},
+
+	tgt=document.body;
+
+tgt.textContent=$("\n")(tgt);
+tgt.style.whiteSpace="pre";
+
+</script>
+
+
+</html>
+
+

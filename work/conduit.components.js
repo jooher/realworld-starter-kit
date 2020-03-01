@@ -36,18 +36,17 @@
 		:'body'.d("! .body"),
 
 	UserInfo
-		/// user
+	/// user
 		:'user-info'.d("*@ .user"
 			,'IMG.user'.d("!! .image@src")
 			,'H4'.d("! .username")
 			,'bio'.d("! .bio")
 			,'BUTTON.follow'.d("! .username").ui("")
-		)
+		),
 
-
-	Comments:
+	Comments
 		/// user article
-		'comments'.d("$append="
+		:'comments'.d("$append="
 
 			,'FORM.comment-form'.d(""
 				,'TEXTAREA placeholder="Write a comment..." rows="3"'.d("")
@@ -56,11 +55,11 @@
 			)
 
 			,'comments'
-				.d("$update; ? $!=(api `articles .article.slug `comments)api:query; *@ $!.comments; ! Comment")
+				.d("$update; ? $!=(`articles .article.slug `comments)api:query; *@ $!.comments; ! Comment")
 				.a("Comment($append.comment@.)")
 
 		),
 
-	Comment:
-		'comment'.d("! Body Info")
+	Comment
+		:'comment'.d("! Body Info")
 }

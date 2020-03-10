@@ -1,0 +1,31 @@
+{
+  "name": "rwa",
+  "version": "1.0.0",
+  "description": "real world application in dap",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jooher/realworld-starter-kit.git"
+  },
+  "keywords": [
+    "dap",
+    "reactive",
+    "framework",
+    "tutorial"
+  ],
+  "author": "Max Sazhin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jooher/realworld-starter-kit/issues"
+  },
+  "homepage": "https://github.com/jooher/realworld-starter-kit#readme",
+  "devDependencies": {
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "webpack": "^4.42.0"
+  }
+}

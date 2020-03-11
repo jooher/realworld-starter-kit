@@ -4,34 +4,54 @@ import router from "/route.js";
 
 const
 
-	route = values => values.reverse().join("/").replace(/\/(?=[@?])/g,""),
+	api = "https://conduit.productionready.io/api/",
+	
+	headers = {
+		"Content-Type": "application/json",
+		"charset":"utf-8"
+	},
+	
+	route = values => values.reverse().join("/").replace(/(?<=[@?])\//g,""),
+	
 	unroute = router(
 		["tag/:tag", {page:""}],
 		["article/:slug", {page:"article"}],
+		["@:username", {page:"profile"}],
 		["@:username/:feed", {page:"profile"}],
 		[":page",{}]
 	),
 	
+
 	dictFromHtmlElements = elems=> Object.assign({}, ...elems.map(el=>({[el.id||el.tagName]:el})));
 
-// Here's the app	
 	
-'APP.conduit'.d("$page= $user= $article="
+'APP.conduit'.d("$page= $user= $article=; u @HASHCHANGE"
 
-	,'NAV'
-		.d("* links.nav"
-			,'A'.d("!? .nav@; !! (.nav)nav@href")
-		)
+	,'ROOF'.d(""
+	
+		,'A.logo href=/#/'.d()//.d("!? .nav@; !! (.nav)nav@href")
 		
+		,'NAV'
+			.d("? $user"
+				,'A icon=create href=/#/editor `Create article'.d("!? ($page `editor)eq@selected")
+				,'A icon=settings href=/#/settings `Settings'.d("!? ($page `settings)eq@selected")
+				,'A'.d("!! $user.username (`@ $user.username)nav@href")
+			)
+			.d("? $user:!"
+				,'A icon=person href=/#/signin `Sign In'.d("!? ($page `signin)eq@selected")
+				,'A icon=person_add href=/#/signup `Sign Up'.d("!? ($page `signup)eq@selected")
+			)
+	)
+
 	//,'H1 `Page:'.d("! $page")
 	
-	,'PAGE.home `Home'
+	,'PAGE.home'
 	///
 	.d("? $page:!; ! html.HEADER"
 
 		,'feed-toggle'.d(""
-			,'A.yourfeed `Your feed'.d("? .username; !! (`@ .username `feed)nav@href")
-			,'A.globalfeed href="/#/" `Global feed'.d()
+			,'A `Your feed'.d("? .username; !! (`@ .username `feed)nav@href")
+			,'A href="/#/" `Global feed'.d()
 		)
 
 		,"Articles( .feed (.tag)uri@criteria )"
@@ -42,19 +62,21 @@ const
 
 	)
 
-	,'PAGE.article `Article'
+	,'PAGE.article'
 	/// article.
 	.d("?? $page@article; ? $!=(`articles .slug)api:query; *@ $!.article" 
 
-		,'banner'.d("! Title Meta")
+		,'HEADER'.d("! Title Meta")
 
 		,"! Body Meta; Comments( .slug )"
 	)
 
 	,'PAGE.profile'
 	/// user.
-	.d("?? $page@profile; ! UserInfo" // $!=(`profile $user.username)api:query;
+	.d("?? $page@profile; ? $!=(`profiles .username)api:query; *@ $!.profile"
 
+		,'HEADER'.d("! UserInfo")
+		
 		,'feed'.d("$toggle=`my $criteria=(.username@author)uri"
 
 			,'articles-toggle'.d("* toggle :split`my,favorited"
@@ -80,12 +102,12 @@ const
 			,'TEXTAREA placeholder="Write your article (in markdown)" rows="8"'.d("")
 			,'INPUT placeholder="Enter tags" type="text"'.d("")
 			,'tag-list'.d("")
-			,'BUTTON.publish-article `Publish'.ui("")
+			,'BUTTON `Publish'.ui("")
 		)
 	)
 
-	,'PAGE.auth'
-	.d("?? $page@auth; $error="
+	,'PAGE.signup'
+	.d("?? $page@signup; $error="
 		,'H1 `Signup'.d("")
 		,'A `Have an account?'.d("")
 		,'UL.error-messages*'.d("* $error"
@@ -94,8 +116,8 @@ const
 		,'FORM'.d(""
 			,'INPUT placeholder="Your Name"'.d("")
 			,'INPUT placeholder="Email"'.d("")
-			,'INPUT placeholder="Password" type="password"'.d("")
-			,'BUTTON.signup `Sign up'.ui("! `signup")
+			,'INPUT placeholder="Password" type=password'.d("")
+			,'BUTTON `Sign up'.ui("")
 		)
 	)
 
@@ -108,11 +130,11 @@ const
 			,'TEXTAREA rows="8" placeholder="Short bio about you"'.d("")
 			,'INPUT type="text" placeholder="Email"'.d("")
 			,'INPUT type="password" placeholder="Password"'.d("")
-			,'BUTTON.update-settings `Update'.ui("")
+			,'BUTTON `Update'.ui("")
 		)
 	)
 
-).e('HASHCHANGE',"& :unroute; $page=.")
+).e('HASHCHANGE',"& :unroute; log $page=.")
 
 .DICT(
 	dict,
@@ -123,11 +145,21 @@ const
 .FUNC({
 	flatten:{
 		nav: values => "/#/"+route(values),
-		api: values => "https://conduit.productionready.io/api/"+route(values),
+		api: (values,names) => {
+			const
+				method = names[names.length-1],
+				body = method && values.pop(),
+				url = api+route(values);
+			return method ? {method,headers,url,body} : url;
+		}
 	},
 	convert:{
 		split: str=>str.split(","),
 		date: utc => new Date(utc).toDateString(),
+		brackets: txt => '('+txt+')',
+		
+		grab: form=>form&&Object.assign({}, ...form.elements.map( el => el.name&&{[el.name]:el.value})),
+		
 		pages: $ => Array .from({length:Math.ceil($.pagesCount/$.limit)}) .map(num=>({num,offset:num*$.limit})),
 		
 		unroute: (dummy,r) => r && unroute(location.hash)

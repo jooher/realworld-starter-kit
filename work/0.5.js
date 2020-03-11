@@ -839,7 +839,7 @@ const	dap=(Env=>
 						this.target.value=value;
 						Perf("Postpone resolve",Date.now(),
 							this.branch.up
-							? Update.checkUp(this.branch.node,this.branch.up,null,false,this.todo)
+							? Update.checkUp(this.branch.node,this.branch.up,false,null,this.todo)
 							: this.branch.runDown(this.todo,this.place,this.instead)
 						);
 					}
@@ -1095,7 +1095,7 @@ const	dap=(Env=>
 		
 		const
 
-		checkUp = (node,change,snitch,result,todo) => {
+		checkUp = (node,change,result,snitch,todo) => {
 
 			const parent = node.parentNode;
 			
@@ -1118,7 +1118,7 @@ const	dap=(Env=>
 			}
 			
 
-			return (parent && parent.P && checkUp(parent,up,node,result)>3) || checkDown(node,change,snitch)>3;
+			return (parent && parent.P && checkUp(parent,up,result,node)>3) || checkDown(node,change,snitch)>3;
 		},			
 		
 		checkDown = (node,change,snitch)=>{//
@@ -1168,7 +1168,7 @@ const	dap=(Env=>
 			checkUp, Rebuild, Append,
 			
 			onDemand: (value,alias,node)=>{
-				checkUp(node,{});
+				checkUp(value||node,{},alias);
 			},
 			
 			onEvent: (event,target)=>{
@@ -1178,7 +1178,7 @@ const	dap=(Env=>
 					node = target||event.currentTarget,
 					value = event.type;
 					
-				Execute.Perf(event.type,Date.now(),checkUp(node,{event},null,value));
+				Execute.Perf(event.type,Date.now(),checkUp(node,{event},value));
 			}
 			
 		};

@@ -1,9 +1,10 @@
-button::before
+[icon]::before
 {
+	content:attr(icon);
+	
   font-family: 'Material Icons';
   display: inline-block;
-  /* line-height: .5em; */
-  margin: 2px;
+  margin: 4px;
   text-transform: none;
   letter-spacing: normal;
   word-wrap: normal;
@@ -13,12 +14,5 @@ button::before
   text-rendering: optimizeLegibility;	/* Support for Safari and Chrome. */
   -moz-osx-font-smoothing: grayscale; 	/* Support for Firefox. */
   font-feature-settings: 'liga';		/* Support for IE. */
-}
-
-.checked::before {
-	content: "check";position: absolute;right:0;top:0;
-}
-
-icon::before, button::before, action:empty::before{
-	content:attr(class);
+  vertical-align: middle;
 }

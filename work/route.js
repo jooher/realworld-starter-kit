@@ -1,15 +1,15 @@
 function Route(route){
-	this.match = route[0].replace(/\//g,"\/").replace(/:\w+/g,"([^\/]+)");
-	this.params = route[0].match(/:(\w+)/);
+	this.match = route[0].replace(/\//g,"\/").replace(/:\w+/g,"([^\/]*)");
+	this.params = route[0].match(/(?<=:)\w+/g);
 	this.seed = route[1];
 }
 
 Route.prototype.fit=function(str){
 	const match = str.match(this.match);
-	return match && match.reduce(
-		(tgt,m,i)=>{tgt[this.params[i]]=m; return tgt},
-		Object.assign({},this.seed)
-	);
+	if(match){
+		match.shift();
+		return Object.assign({}, this.seed, ...match.map((v,i)=>({[this.params[i]]:v})));
+	}
 }
 
 export default function(...tuples){

@@ -3,9 +3,12 @@ export default{
  Articles
 /// feed criteria
 	:'articles'
-	.d("? $!=(`articles .feed .criteria )api:query; * $!.articles@"
-		,'preview'.d("! Info Fav"
-			,'A.preview-link'.d("! Title Body; !! (`article .slug)nav@href")
+	.d("? $!=(`articles .criteria )api:query; * $!.articles@" // .feed
+		,'preview'.d("! Info"
+			,'BUTTON icon=favorite'
+				.d("$!=; $!; !? .favorited; ! .favoritesCount")
+				.ui("? $!=(.favorited (@DELETE `articles .slug `favorite)api (@POST `articles .slug `favorite)api )?!:query; & $!.article@")
+			,'A.preview-link'.d("! Title Description; Tags(.tagList@tags); !! (`article .slug)nav@href")
 		)
 	)
 	.d("? .articlesCount"
@@ -15,10 +18,19 @@ export default{
 	)
 
 ,Title
-	:'H2.title'.d("! .title")
+	:'H2'.d("! .title")
+
+,Description
+	:'description'.d("! .description")
 
 ,Body
-	:'body'.d("! .body")
+	:'body'.d("# .body:marked@innerHTML")
+	
+,Tags
+	// tagList
+	:'tags'.d("* .tags@tag"
+		,'A.tag'.d("!! .tag@ (`tag .tag)nav@href")
+	)
 
 ,Info
 /// author createdAt
@@ -30,26 +42,32 @@ export default{
 		,'date'.d("! .createdAt:date")
 	)
 	
-,Fav
-	:'BUTTON icon=favorite'
-		.d("! .favoritesCount; $!=")
-		.ui("$!=(@POST `articles .slug `favorite)api:query; $=$!.article")
-	
 ,Meta
 /// author createdAt
-	:'meta'.d("! Info; Follow( .author@. )"
-			
-		,'BUTTON icon=favorite `Favorite article'
-			.d("! .favoritesCount:brackets $!=")
-			.ui("$!=(@POST `articles .slug `favorite)api:query; $=$!.article")
-	)
-	
-,Follow
-/// profile.
-	:'BUTTON icon=add'
-		.d("$following=.; ! (($following `Unfollow `Follow)?! .username)spaced")
-		.ui("$following=(@POST `profiles .author.username ($following `unfollow `follow)?!)api:query")
+	:'meta'
+	.d("$!; ! Info (.own Actions.Author Actions.Reader)?!")//
+	.u("&? $!.article@ $!.profile@author; ?")//
 
+,Actions:{
+	
+	Author
+		:'actions'.d(""
+			,'A icon=edit `Edit'.d("!! (`editor .slug)nav@href")
+			,'BUTTON icon=delete `Delete'.ui("( @DELETE `articles .slug)api:query")
+		)
+	
+	,Reader
+		:'actions'.d("! Favorite; Follow( .author@. )"
+		)
+	
+}	
+	
+,Favorite
+/// $!
+	:'BUTTON icon=favorite `Favorite article '
+		.d("!? .favorited; ! .favoritesCount:brackets")//$$meta;
+		.ui("? $!=(.favorited (@DELETE `articles .slug `favorite)api (@POST `articles .slug `favorite)api )?!:query")
+	
 ,UserInfo
 /// profile.
 	:'user-info'.d(""
@@ -59,15 +77,21 @@ export default{
 		,"! Follow"
 	)
 
+,Follow
+/// profile.
+	:'BUTTON icon=add'
+		.d("! ((.following `Unfollow `Follow)?! .username)spaced")
+		.ui("? $!=(.following (@DELETE `profiles .username `follow)api (@POST `profiles .username `follow)api )?!:query")//
+
 ,Comments
 /// user slug
 	:'comments'.d("$append="
 
-		,'FORM.comment'.d(""
-			,'TEXTAREA placeholder="Write a comment..." rows="3"'.d("")
+		,'FORM.comment'.d("$body="
+			,'TEXTAREA rows=3 placeholder="Write a comment..."'.d("! $body").ui("$body=#:check,value")
 			,'IMG.user'.d("!! .user.image@src")
 			,'BUTTON `Post comment'
-			.ui("? $user $user=Signin():wait; $append=( (($body)@comment)@POST `articles .slug `comment )api:query")
+			.ui("? $body dict.error.emptyComment:alert; ? $user $user=Login():wait; $append=( (($body)@comment)@POST `articles .slug `comments )api:query $body=")
 		)
 
 		,'comments'
@@ -79,12 +103,40 @@ export default{
 ,Comment
 	:'comment'.d("! Body Info")
 	
-,Signin
-	:'FORM.signin'.d(""
-			,'INPUT placeholder="Your Name"'.d("")
-			,'INPUT placeholder="Email"'.d("")
-			,'INPUT placeholder="Password" type=password'.d("")
-			,'BUTTON `Sign in'.ui("$!=(#.form:grab@POST `users `login)api:query; ? $user=$!.user")
-		).u("value $user")
+,Login
+	:'login'.d("$!= $have-account=:!"
+		,'FORM'.d(""
+		
+			,'INPUT name=email type=email placeholder="Your Email"'.d()
+			,'Ul.hints'.d("*@hint $!.error.errors.username"
+				,'LI'.d("! .hint")
+			)
+			
+			,'INPUT name=password type=password placeholder="Password"'.d()
+			,'Ul.hints'.d("*@hint $!.error.errors.password"
+				,'LI'.d("! .hint")
+			)
+			
+			,'signin'.d("? $have-account"
+				,'BUTTON `Sign in'.ui("$!=( (#.form:grab@user)@POST `users `login)api:query")
+				,'switch `Need an account?'.ui("$have-account=; ?")
+			)
+			
+			,'signup'.d("? $have-account:!"
+				,'INPUT name=username type=text placeholder="Your Name"'.d()
+				,'BUTTON `Sign up'.ui("$!=( (#.form:grab@user)@POST `users)api:query")
+				,'switch `Have an account?'.ui("$have-account=:!; ?")
+			)
+			
+		).u("? $!:! $!.user:auth.save")
+		
+		,'errors'.d("? $!.error; ! $!.error.errors:JSON.stringify")
+	).u("value $!.user")
+	
+,LoginModal
+	: 'modal'.d("top; $!="
+		,'scrim'.ui("$!=")
+		,'dialog'.d("! Login")
+	).u("kill; ?")
 	
 }

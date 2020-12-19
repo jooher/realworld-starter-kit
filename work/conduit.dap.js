@@ -6,7 +6,7 @@ import modal from "/modal.js";
 
 const
 
-	api = "https://conduit.productionready.io/api/",
+	api = "//conduit.productionready.io/api/", //https:
 	
 	headers = {
 		"Content-Type": "application/json",

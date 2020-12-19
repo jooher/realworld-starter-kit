@@ -10,6 +10,7 @@ body {
   margin: 0;
   position: relative;
   text-align: center;
+  overflow-y: scroll;
 }
 
 header{
@@ -273,11 +274,6 @@ app.conduit {
   /* min-width: 24em; */
   display: block;
   margin: 0 8em;
-}
-
-body {
-  /* overflow-x: hidden; */
-  overflow-y: scroll;
 }
 
 button.favorited {

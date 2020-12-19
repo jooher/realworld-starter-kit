@@ -201,7 +201,7 @@ const	dap=(Env=>
 			const
 			
 			cache = {
-				"$" : new This(['','data'],"$"),
+				"$" : new This(['','data','$'],'node'),
 				"#" : new This([],'node')
 			},
 			
@@ -1166,7 +1166,7 @@ const	dap=(Env=>
 
 		Rebuild	=(node)	=>{
 			const place=node.parentNode;
-			node.P.print(place,(node.$.data!=place.$.data)&&node.$.data,node);
+			node.P.print(place,(node.$.data!=place.$.data)&&node.$.data[""],node);//
 		};
 		
 		return {
